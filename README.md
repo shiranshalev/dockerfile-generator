@@ -1,5 +1,5 @@
 # dockerfile-generator
-generates dockerfile with relevant references for .NET CORE applictaions
+generates a dockerfile with relevant references for .NET CORE applictaions
 
 run the powershell script from the relevant project's folder path.
 this script will generate a basic dockerfile with all of the project's dependencies.
