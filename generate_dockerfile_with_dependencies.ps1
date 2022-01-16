@@ -71,3 +71,5 @@ $dockerFile+=$secondLine
 
 $dockerFile+=$spaceLine
 $dockerFile+= $content
+
+echo $dockerfile
