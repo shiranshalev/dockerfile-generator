@@ -1,12 +1,27 @@
 
-Param(
-[Parameter(Mandatory = $True)]
-[string]$mainProject,
-[Parameter(Mandatory=$True)]
-[string]$dll,
-[Parameter(Mandatory=$True)]
-[string]$maincsproj
-)
+# Param(
+# [Parameter(Mandatory = $True)]
+# [string]$mainProject,
+# [Parameter(Mandatory=$True)]
+# [string]$dll,
+# [Parameter(Mandatory=$True)]
+# [string]$maincsproj
+# )
+
+$mainProject = "ConsoleApp"
+$maincsproj = "ConsoleApp.csproj"
+$dll = $maincsproj.Replace('csproj','dll')
+# trying to unify(-_-) the .net output/variable dependencies seems prone to issues
+# using the `msbuild -r -p` to set the output dll name:
+# https://github.com/dotnet/msbuild/issues/4696
+# so we must pass explicitly .csproj name
+# and it'll also be our entry dll name, unless csproj specified:
+# <AssemblyName>Your.Project.Foo</AssemblyName>
+# but this can be propogated from environment variables during build:
+# <AssemblyName>$(SomeEnvironmentVariable)</AssemblyName> --- tested on linux+Windows
+# added docker file and some test projects to on
+
+
 
 
 
@@ -14,12 +29,11 @@ Param(
 $csprojFiles = gci . -Filter *.csproj -Recurse
 $dockerFile = @"
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
-WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-
+WORKDIR /app
 
 "@
 
@@ -39,11 +53,11 @@ $spaceLine = @"
 "@
 
 $content = @"
-WORKDIR "/src/$($mainProject)"
+WORKDIR "/app/$($mainProject)"
 RUN dotnet build "$($maincsproj)" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "$($maincsproj)" -c Release -o /app/publish
+RUN dotnet publish "$($maincsproj)" --no-restore -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
@@ -72,4 +86,4 @@ $dockerFile+=$secondLine
 $dockerFile+=$spaceLine
 $dockerFile+= $content
 
-echo $dockerfile
+$dockerFile | Out-File -Encoding utf8 -FilePath "Dockerfile" -Force
