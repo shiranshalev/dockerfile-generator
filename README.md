@@ -9,3 +9,20 @@ please notice you'll need to provide 3 parameters: \
 'maindll': the main dll that the application should use \
 'maincsproj': the main csproj file that the application should use
 
+to create a multi project dependency build:
+```
+dotnet new console -n ConsoleApp
+dotnet new classlib -n SomeIntefrace
+dotnet new classlib -n SomeLibrary
+dotnet add ConsoleApp reference SomeIntefrace
+dotnet add ConsoleApp reference SomeLibrary
+
+```
+same folder, powershell:
+```
+.\generate_dockerfile_with_dependencies.ps1
+
+docker build . -t test:auto
+docker run test:auto
+```
+

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\SomeIntefrace\SomeIntefrace.csproj" />
+    <ProjectReference Include="..\SomeLibrary\SomeLibrary.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyName>$(ASPASP_ENVVAR)</AssemblyName> <!-- if no env var found, it'll default to csproj name -->
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
